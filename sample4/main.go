@@ -5,22 +5,24 @@ import (
 	"net/http"
 )
 
-type helloHandler struct{}
+type helloHandler struct {
+	greet string
+}
 
 func main() {
 	mux := http.NewServeMux()
-	helloHandler := newHelloHandler()
+	helloHandler := newHelloHandler("hello")
 
 	mux.Handle("/hello", helloHandler)
 
 	http.ListenAndServe(":8080", mux)
 }
 
-func newHelloHandler() *helloHandler {
-	return &helloHandler{}
+func newHelloHandler(greet string) *helloHandler {
+	return &helloHandler{greet: greet}
 }
 
 func (h *helloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Hello World")
+	fmt.Fprintf(w, fmt.Sprintf("%s", h.greet))
 }
