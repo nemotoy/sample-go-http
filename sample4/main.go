@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 )
 
 type helloHandler struct {
@@ -30,11 +29,17 @@ func (h *helloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func baser(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// common
 		log.Printf("start ... ")
-		time.Sleep(1 * time.Second)
+		id := r.Header.Get("ID")
+		if id == "" {
+			c := http.StatusBadRequest
+			w.WriteHeader(c)
+			w.Write([]byte(http.StatusText(c)))
+		}
 		h.ServeHTTP(w, r)
 		log.Printf("end ... ")
 	})
+	return http.HandlerFunc(fn)
 }
