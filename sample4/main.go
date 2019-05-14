@@ -14,7 +14,7 @@ func main() {
 	mux := http.NewServeMux()
 	helloHandler := newHelloHandler("hello")
 
-	mux.Handle("/hello", baser(helloHandler))
+	mux.Handle("/hello", newHeaderAuth(helloHandler))
 
 	http.ListenAndServe(":8080", mux)
 }
@@ -28,7 +28,7 @@ func (h *helloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, fmt.Sprintf("%s", h.greet))
 }
 
-func baser(h http.Handler) http.Handler {
+func newHeaderAuth(h http.Handler) http.Handler {
 	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// common
 		log.Printf("start ... ")
